@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Hakkımızda</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #121212;
+      color: #fafafa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+      min-height: 100vh;
+    }
+    nav {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+    }
+    nav a {
+      margin: 0 20px;
+      text-decoration: none;
+      color: #ccc;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #fff; }
+    nav a.active {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+      padding-bottom: 4px;
+    }
+    h1 {
+      margin-top: 60px;
+      font-size: 36px;
+      font-weight: bold;
+    }
+    .content {
+      margin-top: 30px;
+      font-size: 18px;
+      line-height: 1.8;
+      max-width: 800px;
+      text-align: center;
+      color: #ccc;
+    }
+    .content strong { color: #fff; }
+    @media (max-width: 600px) {
+      h1 { font-size: 28px; }
+      .content { font-size: 16px; padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="menu">
+    <a href="index.html">Ana Sayfa</a>
+    <a href="sayac.html">Sayaç</a>
+    <a href="ayarlar.html">Ayarlar</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="okulumuz.html">Okulumuz</a>
+  </nav>
+
+  <h1>Hakkımızda</h1>
+
+  <div class="content">
+    <p>Bu <strong>Canlı Saat</strong> web sitesi, genç bir yazılımcı tarafından yapılmıştır ve bu website <strong>Kurtköy Bayramlar Koleji</strong>’ne aittir. Proje 2023-2024 yılları arasında planlanmış ve 2024 yılında öne sürülmüştür. 2025 Ekim ayında ise büyük bir güncelleme almıştır.</p>
+    
+    <p>Kurucumuz <strong>Kuzey Öğütken</strong> 2023-2024 ekibinden ayrılmış ve tek başına yola çıkmıştır. Tam olarak 2 yıldır bu projeye emek veren Kuzey Öğütken, projesini başarıyla tamamlamıştır. Artık geriye düşen sizin yorumlarınızdır.</p>
+    
+    <p>Her şey için çok teşekkürler ve bu canlı saati kullandığınız için minnettarız.</p>
+  </div>
+
+  <script>
+    // Menü aktif link vurgulama
+    const links = document.querySelectorAll('#menu a');
+    const currentPath = window.location.pathname.split("/").pop() || 'hakkimizda.html';
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPath) link.classList.add('active');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Sayaç</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #121212;
+      color: #fafafa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    nav {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+    }
+    nav a {
+      margin: 0 20px;
+      text-decoration: none;
+      color: #ccc;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #fff; }
+    nav a.active {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+      padding-bottom: 4px;
+    }
+    h1 { margin-top: 60px; font-size: 36px; font-weight: bold; }
+    .inputs { margin-top: 30px; }
+    .inputs label { font-size: 18px; margin-right: 10px; }
+    .inputs input { font-size: 18px; padding: 6px 10px; margin: 0 10px; }
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      font-size: 18px;
+      background: none;
+      border: 2px solid #ccc;
+      color: #ccc;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    button:hover { border-color: #fff; color: #fff; }
+    #countdown { margin-top: 50px; font-size: 48px; font-weight: bold; }
+    #message { margin-top: 30px; font-size: 28px; font-weight: bold; color: #7efc9a; }
+  </style>
+</head>
+<body>
+  <nav id="menu">
+    <a href="index.html">Ana Sayfa</a>
+    <a href="sayac.html">Sayaç</a>
+    <a href="ayarlar.html">Ayarlar</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="okulumuz.html">Okulumuz</a>
+  </nav>
+
+  <h1>Sayaç</h1>
+
+  <div class="inputs">
+    <label for="start">Başlangıç:</label>
+    <input type="time" id="start">
+    <label for="end">Bitiş:</label>
+    <input type="time" id="end">
+  </div>
+
+  <button onclick="startCountdown()">Sayaç Başlat</button>
+
+  <div id="countdown">--:--:--</div>
+  <div id="message"></div>
+
+  <script>
+    // Menü aktif link vurgulama
+    const links = document.querySelectorAll('#menu a');
+    const path = window.location.pathname.split("/").pop() || 'sayac.html';
+    links.forEach(link => {
+      if (link.getAttribute('href') === path) link.classList.add('active');
+    });
+
+    let interval;
+    let finished = false;
+
+    // Bildirim gösterme fonksiyonu
+    function showNotification(title, body) {
+      if ('Notification' in window) {
+        if (Notification.permission === 'granted') {
+          new Notification(title, { body });
+        }
+      }
+    }
+
+    function startCountdown() {
+      // Bildirim izni iste ve başlatıldığında göster
+      if ('Notification' in window && Notification.permission !== 'granted') {
+        Notification.requestPermission().then(permission => {
+          if (permission === 'granted') {
+            showNotification("Sayaç Başladı ⏱️", "Başarılar dileriz! 🎯");
+          }
+        });
+      } else {
+        showNotification("Sayaç Başladı ⏱️", "Başarılar dileriz! 🎯");
+      }
+
+      clearInterval(interval);
+      finished = false;
+      document.getElementById('message').textContent = '';
+
+      const startVal = document.getElementById('start').value;
+      const endVal = document.getElementById('end').value;
+
+      if (!startVal || !endVal) {
+        document.getElementById('countdown').textContent = "Lütfen saatleri girin.";
+        return;
+      }
+
+      const [sh, sm] = startVal.split(':').map(Number);
+      const [eh, em] = endVal.split(':').map(Number);
+
+      interval = setInterval(() => {
+        const now = new Date();
+        const currentSec = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+        const startSec = sh*3600 + sm*60;
+        const endSec = eh*3600 + em*60;
+
+        if (currentSec < startSec) {
+          document.getElementById('countdown').textContent = "Sayaç henüz başlamadı.";
+        } else if (currentSec >= startSec && currentSec < endSec) {
+          const rem = endSec - currentSec;
+          const rh = Math.floor(rem / 3600);
+          const rm = Math.floor((rem % 3600) / 60);
+          const rs = rem % 60;
+          const str = String(rh).padStart(2,'0') + ':' + String(rm).padStart(2,'0') + ':' + String(rs).padStart(2,'0');
+          document.getElementById('countdown').textContent = str;
+        } else {
+          document.getElementById('countdown').textContent = "00:00:00";
+          if (!finished) {
+            document.getElementById('message').textContent = "🎉 Tebrikler! Süre tamamlandı.";
+            showNotification("Sayaç Bitti 🎉", "Tebrikler! Süre tamamlandı.");
+            finished = true;
+          }
+          clearInterval(interval);
+        }
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

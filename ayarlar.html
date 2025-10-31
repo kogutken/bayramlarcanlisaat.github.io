@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Ayarlar</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #121212;
+      color: #fafafa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      min-height: 100vh;
+      padding-top: 80px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    nav {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+    }
+    nav a {
+      margin: 0 20px;
+      text-decoration: none;
+      color: #ccc;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav a:hover {
+      color: #fff;
+    }
+    nav a.active {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+      padding-bottom: 4px;
+    }
+
+    h1 {
+      font-size: 40px;
+      margin-bottom: 30px;
+    }
+
+    .settings-container {
+      background-color: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 12px;
+      padding: 30px;
+      width: 90%;
+      max-width: 500px;
+      box-shadow: 0 0 10px rgba(255,255,255,0.05);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .setting-group {
+      margin-bottom: 25px;
+      text-align: left;
+    }
+
+    .setting-group label {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+      color: #ccc;
+    }
+
+    .setting-group select,
+    .setting-group input[type="checkbox"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #333;
+      border-radius: 6px;
+      background-color: #222;
+      color: #fff;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+
+    .save-btn {
+      background-color: transparent;
+      border: 2px solid #ccc;
+      color: #ccc;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s;
+      margin-top: 15px;
+    }
+
+    .save-btn:hover {
+      color: #fff;
+      border-color: #fff;
+    }
+
+    /* 🌞 AÇIK TEMA STİLİ */
+    body.light {
+      background-color: #f2f2f2;
+      color: #111;
+    }
+
+    body.light .settings-container {
+      background-color: #fff;
+      border-color: #ddd;
+      color: #111;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    body.light nav a {
+      color: #555;
+    }
+
+    body.light nav a.active {
+      color: #000;
+      border-bottom-color: #000;
+    }
+
+    body.light .setting-group select,
+    body.light .setting-group input[type="checkbox"] {
+      background-color: #f9f9f9;
+      border: 1px solid #ccc;
+      color: #000;
+    }
+
+    body.light .save-btn {
+      border-color: #555;
+      color: #555;
+    }
+
+    body.light .save-btn:hover {
+      color: #000;
+      border-color: #000;
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 28px; }
+      .settings-container { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <nav id="menu">
+    <a href="index.html">Ana Sayfa</a>
+    <a href="sayac.html">Sayaç</a>
+    <a href="ayarlar.html">Ayarlar</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="okulumuz.html">Okulumuz</a>
+  </nav>
+
+  <h1>Ayarlar</h1>
+
+  <div class="settings-container">
+    <div class="setting-group">
+      <label for="timeFormat">Saat Biçimi</label>
+      <select id="timeFormat">
+        <option value="24">24 Saat</option>
+        <option value="12">12 Saat (AM/PM)</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label for="themeMode">Tema</label>
+      <select id="themeMode">
+        <option value="dark">Koyu Tema 🌙</option>
+        <option value="light">Açık Tema ☀️</option>
+      </select>
+    </div>
+
+    <div class="setting-group">
+      <label>
+        <input type="checkbox" id="showSeconds" checked>
+        Saniyeleri Göster
+      </label>
+    </div>
+
+    <button class="save-btn" onclick="saveSettings()">Kaydet</button>
+  </div>
+
+  <script>
+    // Menüde aktif link vurgulama
+    const links = document.querySelectorAll('#menu a');
+    const currentPath = window.location.pathname.split('/').pop() || 'ayarlar.html';
+    links.forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+      }
+    });
+
+    // Ayarları kaydet
+    function saveSettings() {
+      const format = document.getElementById('timeFormat').value;
+      const theme = document.getElementById('themeMode').value;
+      const showSec = document.getElementById('showSeconds').checked;
+
+      const settings = { format, theme, showSec };
+      localStorage.setItem('clockSettings', JSON.stringify(settings));
+      applyTheme(theme);
+      alert("Ayarlar kaydedildi ✅");
+    }
+
+    // Tema uygula
+    function applyTheme(theme) {
+      document.body.classList.toggle('light', theme === 'light');
+    }
+
+    // Sayfa yüklenince ayarları yükle
+    window.onload = () => {
+      const saved = JSON.parse(localStorage.getItem('clockSettings'));
+      if (saved) {
+        document.getElementById('timeFormat').value = saved.format;
+        document.getElementById('themeMode').value = saved.theme;
+        document.getElementById('showSeconds').checked = saved.showSec;
+        applyTheme(saved.theme);
+      }
+    };
+  </script>
+</body>
+</html>
