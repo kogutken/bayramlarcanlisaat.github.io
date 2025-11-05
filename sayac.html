@@ -51,8 +51,67 @@
       transition: all 0.3s;
     }
     button:hover { border-color: #fff; color: #fff; }
-    #countdown { margin-top: 50px; font-size: 48px; font-weight: bold; }
+    #countdown { 
+      margin-top: 50px; 
+      font-size: 48px; 
+      font-weight: bold; 
+      cursor: pointer;
+      user-select: none;
+    }
+    #countdown:hover {
+      opacity: 0.8;
+    }
     #message { margin-top: 30px; font-size: 28px; font-weight: bold; color: #7efc9a; }
+
+    /* Tam Ekran Büyütülmüş Sayaç */
+    #bigScreen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #121212;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    #bigCountdown {
+      font-size: 180px;
+      font-weight: bold;
+      color: #fafafa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      letter-spacing: 8px;
+    }
+    #bigMessage {
+      margin-top: 30px;
+      font-size: 50px;
+      font-weight: bold;
+      color: #7efc9a;
+    }
+    .closeBig {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 50px;
+      color: #ccc;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .closeBig:hover {
+      color: #fff;
+    }
+
+    /* Mobil için küçült */
+    @media (max-width: 768px) {
+      #bigCountdown { font-size: 100px; letter-spacing: 4px; }
+      #bigMessage { font-size: 36px; }
+      .closeBig { font-size: 40px; top: 20px; right: 20px; }
+    }
+    @media (max-width: 480px) {
+      #bigCountdown { font-size: 80px; }
+      #bigMessage { font-size: 30px; }
+    }
   </style>
 </head>
 <body>
@@ -79,8 +138,15 @@
   <div id="countdown">--:--:--</div>
   <div id="message"></div>
 
+  <!-- BÜYÜK EKRAN -->
+  <div id="bigScreen">
+    <div class="closeBig">×</div>
+    <div id="bigCountdown">--:--:--</div>
+    <div id="bigMessage"></div>
+  </div>
+
   <script>
-    // Menü aktif link vurgulama
+    // Menü aktif link
     const links = document.querySelectorAll('#menu a');
     const path = window.location.pathname.split("/").pop() || 'sayac.html';
     links.forEach(link => {
@@ -90,30 +156,22 @@
     let interval;
     let finished = false;
 
-    // Bildirim gösterme fonksiyonu
+    // Bildirim
     function showNotification(title, body) {
-      if ('Notification' in window) {
-        if (Notification.permission === 'granted') {
-          new Notification(title, { body });
-        }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(title, { body });
       }
     }
 
     function startCountdown() {
-      // Bildirim izni iste ve başlatıldığında göster
       if ('Notification' in window && Notification.permission !== 'granted') {
-        Notification.requestPermission().then(permission => {
-          if (permission === 'granted') {
-            showNotification("Sayaç Başladı ⏱️", "Başarılar dileriz! 🎯");
-          }
-        });
-      } else {
-        showNotification("Sayaç Başladı ⏱️", "Başarılar dileriz! 🎯");
+        Notification.requestPermission();
       }
 
       clearInterval(interval);
       finished = false;
       document.getElementById('message').textContent = '';
+      document.getElementById('bigMessage').textContent = '';
 
       const startVal = document.getElementById('start').value;
       const endVal = document.getElementById('end').value;
@@ -132,26 +190,67 @@
         const startSec = sh*3600 + sm*60;
         const endSec = eh*3600 + em*60;
 
+        let displayText = "";
+
         if (currentSec < startSec) {
-          document.getElementById('countdown').textContent = "Sayaç henüz başlamadı.";
+          displayText = "Sayaç henüz başlamadı.";
         } else if (currentSec >= startSec && currentSec < endSec) {
           const rem = endSec - currentSec;
           const rh = Math.floor(rem / 3600);
           const rm = Math.floor((rem % 3600) / 60);
           const rs = rem % 60;
-          const str = String(rh).padStart(2,'0') + ':' + String(rm).padStart(2,'0') + ':' + String(rs).padStart(2,'0');
-          document.getElementById('countdown').textContent = str;
+          displayText = String(rh).padStart(2,'0') + ':' + String(rm).padStart(2,'0') + ':' + String(rs).padStart(2,'0');
         } else {
-          document.getElementById('countdown').textContent = "00:00:00";
+          displayText = "00:00:00";
           if (!finished) {
-            document.getElementById('message').textContent = "🎉 Tebrikler! Süre tamamlandı.";
-            showNotification("Sayaç Bitti 🎉", "Tebrikler! Süre tamamlandı.");
+            const msg = "Tebrikler! Süre tamamlandı.";
+            document.getElementById('message').textContent = msg;
+            document.getElementById('bigMessage').textContent = msg;
+            showNotification("Sayaç Bitti", msg);
             finished = true;
           }
           clearInterval(interval);
         }
+
+        // Küçük ekran
+        document.getElementById('countdown').textContent = displayText;
+
+        // Büyük ekran açıksa güncelle
+        if (document.getElementById('bigScreen').style.display === 'flex') {
+          document.getElementById('bigCountdown').textContent = displayText;
+        }
       }, 1000);
     }
+
+    // BÜYÜK EKRAN KONTROL
+    const bigScreen = document.getElementById('bigScreen');
+    const bigCountdown = document.getElementById('bigCountdown');
+
+    // Tıklayınca büyük ekran
+    document.getElementById('countdown').addEventListener('click', () => {
+      if (interval && !finished) {
+        bigScreen.style.display = 'flex';
+        bigCountdown.textContent = document.getElementById('countdown').textContent;
+        document.getElementById('bigMessage').textContent = document.getElementById('message').textContent;
+      }
+    });
+
+    // Kapat
+    document.querySelector('.closeBig').addEventListener('click', () => {
+      bigScreen.style.display = 'none';
+    });
+
+    // ESC tuşu
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        bigScreen.style.display = 'none';
+      }
+    });
+
+    // Dışarı tıklama (isteğe bağlı, kapalı)
+    // bigScreen.addEventListener('click', (e) => {
+    //   if (e.target === bigScreen) bigScreen.style.display = 'none';
+    // });
   </script>
 </body>
 </html>
