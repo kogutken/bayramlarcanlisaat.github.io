@@ -17,6 +17,7 @@
       height: 100vh;
       text-align: center;
       transition: background-color 0.5s, color 0.5s;
+      overflow: hidden; /* Konfeti taşmasını engeller */
     }
     nav {
       position: absolute;
@@ -24,6 +25,7 @@
       width: 100%;
       text-align: center;
       font-size: 18px;
+      transition: opacity-transform 0.3s ease;
     }
     nav a {
       margin: 0 20px;
@@ -39,7 +41,13 @@
       border-bottom: 2px solid #fff;
       padding-bottom: 4px;
     }
-    #clock { font-size: 120px; font-weight: bold; }
+    #clock { 
+      font-size: 120px; 
+      font-weight: bold; 
+      cursor: pointer; /* Tıklanabilir olduğunu göster */
+      user-select: none; /* Metin seçilmesini engelle */
+      transition: font-size 0.4s ease;
+    }
     #timezone { font-size: 28px; margin-top: 10px; opacity: 0.8; }
     #special-day { font-size: 22px; margin-top: 25px; color: #ff5555; }
     .timezone-buttons { margin-top: 50px; }
@@ -60,7 +68,33 @@
       .timezone-buttons button { font-size: 14px; padding: 6px 12px; }
     }
 
-    /* Türkiye bayrağı temalı konfeti efekti */
+    /* TAM EKRAN MODU */
+    .fullscreen {
+      position: fixed !important;
+      top: 0; left: 0;
+      width: 100vw !important;
+      height: 100vh !important;
+      background-color: #000 !important;
+      display: flex !important;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      font-size: 200px !important;
+      transition: all 0.4s ease;
+    }
+
+    .fullscreen #clock {
+      font-size: 180px;
+    }
+
+    .hide-in-fullscreen {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.8);
+      transition: all 0.3s ease;
+    }
+
+    /* Konfeti */
     .confetti {
       position: fixed;
       top: -20px;
@@ -69,7 +103,7 @@
       animation: fall 3s linear infinite;
     }
     .confetti.background {
-      background-color: #e30b20; /* Türkiye bayrağı kırmızısı */
+      background-color: #e30b20;
       width: 15px;
       height: 15px;
     }
@@ -114,25 +148,49 @@
     });
 
     let currentZone = 'Europe/Istanbul';
+    let isFullscreen = false;
+
     function updateClock() {
       const now = new Date();
       const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: currentZone, hour12: false };
       document.getElementById('clock').textContent = new Intl.DateTimeFormat('tr-TR', options).format(now);
       document.getElementById('timezone').textContent = currentZone;
     }
-    function changeTimezone(zone) { currentZone = zone; updateClock(); }
+
+    function changeTimezone(zone) { 
+      currentZone = zone; 
+      updateClock(); 
+    }
+
+    // TAM EKRAN MODU
+    const clock = document.getElementById('clock');
+    const body = document.body;
+    const hideElements = [document.querySelector('nav'), document.getElementById('timezone'), document.getElementById('special-day'), document.querySelector('.timezone-buttons')];
+
+    clock.addEventListener('click', () => {
+      if (isFullscreen) {
+        // Çıkış
+        body.classList.remove('fullscreen');
+        hideElements.forEach(el => el.classList.remove('hide-in-fullscreen'));
+        isFullscreen = false;
+      } else {
+        // Giriş
+        body.classList.add('fullscreen');
+        hideElements.forEach(el => el.classList.add('hide-in-fullscreen'));
+        isFullscreen = true;
+      }
+    });
 
     function checkSpecialDay() {
-      // Sistem tarihini kullan
       const today = new Date();
       const day = today.getDate();
       const month = today.getMonth() + 1;
 
       const specialDays = [
-        { day: 29, month: 10, text: "🎉 Cumhuriyet Bayramı Kutlu Olsun!" },
-        { day: 1, month: 1, text: "Yılbaşı 🎉" },
-        { day: 19, month: 5, text: "Atatürk’ü Anma, Gençlik ve Spor Bayramı 🏃‍♂️" },
-        { day: 23, month: 4, text: "Ulusal Egemenlik ve Çocuk Bayramı 👧👦" }
+        { day: 29, month: 10, text: "Cumhuriyet Bayramı Kutlu Olsun!" },
+        { day: 1, month: 1, text: "Yılbaşı" },
+        { day: 19, month: 5, text: "Atatürk’ü Anma, Gençlik ve Spor Bayramı" },
+        { day: 23, month: 4, text: "Ulusal Egemenlik ve Çocuk Bayramı" }
       ];
 
       const found = specialDays.find(d => d.day === day && d.month === month);
@@ -142,31 +200,30 @@
 
       // 29 Ekim özel teması
       if(day === 29 && month === 10){
-        document.body.style.backgroundColor = "#e30b20"; // Türkiye bayrağı kırmızısı
-        document.body.style.color = "#fff"; 
-        // Türkiye bayrağı temalı konfeti
+        if (!isFullscreen) {
+          document.body.style.backgroundColor = "#e30b20";
+          document.body.style.color = "#fff"; 
+        }
+        // Konfeti efekti
         for(let i = 0; i < 50; i++) {
           const confetti = document.createElement('div');
           confetti.className = 'confetti';
-          // Rastgele ay, yıldız veya kırmızı arka plan
           const type = i % 3 === 0 ? 'moon' : (i % 3 === 1 ? 'star' : 'background');
           
           if (type === 'moon') {
-            confetti.innerHTML = `
-              <svg viewBox="0 0 100 100">
-                <path d="M50,10 A40,40 0 0,1 90,50 A40,40 0 0,1 50,90 A28,28 0 0,0 50,34 A28,28 0 0,0 50,10" fill="#fff" />
-              </svg>`;
+            confetti.innerHTML = `<svg viewBox="0 0 100 100"><path d="M50,10 A40,40 0 0,1 90,50 A40,40 0 0,1 50,90 A28,28 0 0,0 50,34 A28,28 0 0,0 50,10" fill="#fff" /></svg>`;
           } else if (type === 'star') {
-            confetti.innerHTML = `
-              <svg viewBox="0 0 100 100">
-                <path d="M50,5 L61,39 L95,39 L67,57 L79,90 L50,70 L21,90 L33,57 L5,39 L39,39 Z" fill="#fff" />
-              </svg>`;
+            confetti.innerHTML = `<svg viewBox="0 0 100 100"><path d="M50,5 L61,39 L95,39 L67,57 L79,90 L50,70 L21,90 L33,57 L5,39 L39,39 Z" fill="#fff" /></svg>`;
           } else {
             confetti.classList.add('background');
           }
           
           confetti.style.left = Math.random() * window.innerWidth + 'px';
+          confetti.style.animationDelay = Math.random() * 2 + 's';
           document.body.appendChild(confetti);
+
+          // 3 saniye sonra sil
+          setTimeout(() => confetti.remove(), 3000);
         }
       }
     }
