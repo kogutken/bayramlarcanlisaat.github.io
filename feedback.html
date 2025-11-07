@@ -1,110 +1,127 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Geri Bildirim</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      background-color: #121212;
-      color: #fafafa;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      min-height: 100vh;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      position: absolute; top: 20px; width: 100%; text-align: center; font-size: 18px;
-    }
-    nav a { margin: 0 20px; color: #ccc; text-decoration: none; transition: color 0.3s; }
-    nav a:hover { color: #fff; }
-    nav a.active { color: #fff; font-weight: bold; border-bottom: 2px solid #fff; padding-bottom: 4px; }
-
-    .form-container {
-      max-width: 500px; margin: 100px auto; background: #1e1e1e; padding: 30px; border-radius: 16px;
-    }
-    label { display: block; margin: 15px 0 5px; text-align: left; }
-    input, textarea {
-      width: 100%; padding: 12px; background: #2a2a2a; border: 1px solid #444; color: #fff;
-      border-radius: 8px; font-size: 16px;
-    }
-    textarea { min-height: 100px; resize: vertical; }
-    button {
-      background: #ff5555; color: white; border: none; padding: 12px 24px;
-      font-size: 16px; border-radius: 8px; cursor: pointer; margin-top: 10px;
-    }
-    button:hover { background: #cc4444; }
-    .success { margin-top: 20px; padding: 12px; background: #2d6a2d; color: #a8f1a8; border-radius: 8px; display: none; }
-  </style>
+  <meta charset="UTF-8">
+  <title>Geri Bildirim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #121212;
+      color: #fafafa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    nav {
+      position: absolute;
+      top: 20px;
+      width: 100%;
+      text-align: center;
+      font-size: 18px;
+    }
+    nav a {
+      margin: 0 20px;
+      text-decoration: none;
+      color: #ccc;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+    nav a:hover { color: #fff; }
+    nav a.active {
+      color: #fff;
+      font-weight: bold;
+      border-bottom: 2px solid #fff;
+      padding-bottom: 4px;
+    }
+    .feedback-container {
+      background-color: #1e1e1e;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 500px;
+      margin-top: 80px;
+    }
+    h1 { font-size: 32px; margin-bottom: 20px; color: #ff5555; }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      background-color: #2a2a2a;
+      border: 1px solid #444;
+      color: #fff;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    textarea { min-height: 120px; resize: vertical; }
+    button {
+      background-color: #ff5555;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover { background-color: #cc4444; }
+    /* Başarı mesajı için stil, artık gerekli olmayabilir ama koruyorum */
+    .success-message {
+      margin-top: 20px;
+      padding: 12px;
+      background-color: #2d6a2d;
+      color: #a8f1a8;
+      border-radius: 8px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
 
-  <nav id="menu">
-    <a href="index.html">Ana Sayfa</a>
-    <a href="sayac.html">Sayaç</a>
-    <a href="ayarlar.html">Ayarlar</a>
-    <a href="hakkimizda.html">Hakkımızda</a>
-    <a href="okulumuz.html">Okulumuz</a>
-    <a href="feedback.html">Geri Bildirim</a>
-  </nav>
+  <nav id="menu">
+    <a href="index.html">Ana Sayfa</a>
+    <a href="sayac.html">Sayaç</a>
+    <a href="ayarlar.html">Ayarlar</a>
+    <a href="hakkimizda.html">Hakkımızda</a>
+    <a href="okulumuz.html">Okulumuz</a>
+    <a href="feedback.html" class="active">Geri Bildirim</a>   </nav>
 
-  <div class="form-container">
-    <h1>Geri Bildirim</h1>
+  <div class="feedback-container">
+    <h1>Geri Bildirim Gönder</h1>
+    <p>Fikrinizi, önerinizi ya da bir sorunu bizimle paylaşın.</p>
 
-    <!-- NETLIFY FORMS -->
-    <form name="contact" data-netlify="true" method="POST" id="feedbackForm">
-      <p>
-        <label>Adınız: <input type="text" name="name" required /></label>
-      </p>
-      <p>
-        <label>E-posta: <input type="email" name="email" /></label>
-      </p>
-      <p>
-        <label>Mesajınız:<br>
-          <textarea name="message" rows="4" required></textarea>
-        </label>
-      </p>
-      <p>
-        <button type="submit">Gönder</button>
-      </p>
-    </form>
+        <form action="https://formspree.io/f/xovpyyng" method="POST">
+      <input type="text" name="name" placeholder="Adınız" required>
+      <input type="email" name="email" placeholder="E-posta (isteğe bağlı)">
+      <textarea name="message" placeholder="Mesajınız..." required></textarea>
+      <button type="submit">Gönder</button>
+    </form>
 
-    <div id="successMessage" class="success">
-      Teşekkürler! Mesajın alındı.
-    </div>
-  </div>
+    <div id="successMessage" class="success-message">
+      Teşekkür ederiz! Geri bildiriminiz alındı. (Bu mesaj Formspree'nin varsayılan yönlendirmesi nedeniyle görünmeyebilir)
+    </div>
+  </div>
 
-  <script>
-    // AKTİF MENÜ
-    const currentPage = window.location.pathname.split("/").pop() || "index.html";
-    document.querySelectorAll("#menu a").forEach(link => {
-      link.classList.remove("active");
-      if (link.getAttribute("href") === currentPage) link.classList.add("active");
-    });
+    <script>
+    // 1. AKTİF MENÜ (Sayfa adı ile linki eşleştirme)
+    const currentPage = window.location.pathname.split("/").pop() || "index.html";
+    document.querySelectorAll("#menu a").forEach(link => {
+      link.classList.remove("active");
+      // Dosya adını kontrol et
+      if (link.getAttribute("href") === currentPage) {
+        link.classList.add("active");
+      }
+    });
 
-    // FORM GÖNDERİMİ (Sayfa yenilenmesin)
-    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const button = this.querySelector('button');
-      button.textContent = 'Gönderiliyor...';
-
-      fetch('/', {
-        method: 'POST',
-        body: new FormData(this),
-        headers: { 'Accept': 'application/json' }
-      }).then(res => {
-        if (res.ok) {
-          document.getElementById('successMessage').style.display = 'block';
-          this.reset();
-          button.textContent = 'Gönder';
-          setTimeout(() => {
-            document.getElementById('successMessage').style.display = 'none';
-          }, 3000);
-        }
-      });
-    });
-  </script>
+    // ** ÖNEMLİ **
+    // Form gönderimi artık HTML 'action' niteliği ile Formspree'ye yapıldığı için, 
+    // önceki JavaScript gönderim kodu (e.preventDefault() ile başlayan kısım) kaldırılmıştır.
+  </script>
 
 </body>
 </html>
